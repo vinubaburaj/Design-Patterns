@@ -2,32 +2,18 @@ package designpatterns.observer.weather;
 
 
 import java.util.ArrayList;
+import java.util.Observable;
 
-public class WeatherData implements Subject{
-    private ArrayList<Observer> observers;
+public class WeatherData extends Observable {
     private float temperature;
     private float humidity;
     private float pressure;
 
-    public WeatherData(){
-        observers = new ArrayList<Observer>();
-    }
-    public void registerObserver(Observer o) {
-        observers.add(o);
-    }
-
-    public void removeObserver(Observer o) {
-        observers.remove(o);
-    }
-
-    public void notifyObservers() {
-        for(Observer observer: observers){
-            observer.update(temperature, pressure,humidity);
-        }
-    }
+    public WeatherData(){ }
 
     public void measurementsChanged(){
-        this.notifyObservers();
+        setChanged();
+        notifyObservers();
     }
 
     public void setMeasurements(float temperature, float humidity, float pressure){
@@ -35,7 +21,6 @@ public class WeatherData implements Subject{
         this.humidity = humidity;
         this.pressure = pressure;
         measurementsChanged();
-
     }
 
     public float getTemperature(){

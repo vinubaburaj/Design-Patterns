@@ -1,36 +1,44 @@
 package designpatterns.observer.weather;
 
-public class StatisticsDisplay implements Observer, DisplayElement{
+import java.util.Observable;
+import java.util.Observer;
 
+public class StatisticsDisplay implements Observer, DisplayElement{
+    Observable observable;
     private float maxTemp = 0.0f;
     private float minTemp = 200;
     private float sumTemp = 0.0f;
     private int numReadings = 0;
-    private Subject weatherData;
+    private float temperature;
 
-    public StatisticsDisplay(Subject weatherData){
-        this.weatherData = weatherData;
-        weatherData.registerObserver(this);
-    }
-
-    public void update(float temp, float humidity, float pressure) {
-        sumTemp += temp;
-        numReadings++;
-
-        if(temp > maxTemp) {
-            maxTemp = temp;
-        }
-        if (temp < minTemp) {
-            minTemp = temp;
-        }
-
-        display();
+    public StatisticsDisplay(Observable observable){
+        this.observable = observable;
+        this.observable.addObserver(this);
     }
 
     public void display() {
-        System.out.println("Weather Statistics");
-        System.out.println("Max temp: " + this.maxTemp);
-        System.out.println("Min temp: " + this.minTemp);
+        System.out.println("Max temp: " + this.maxTemp +
+                " Min temp: " + this.minTemp +
+                " Average temp: " + (sumTemp/numReadings));
+    }
+
+    public void update(Observable obs, Object arg) {
+        if (obs instanceof WeatherData){
+            WeatherData weatherData = (WeatherData)obs;
+            this.temperature = weatherData.getTemperature();
+            this.calculateTemperatureStatistics(this.temperature);
+            this.display();
+        }
+    }
+
+    private void calculateTemperatureStatistics(float temp){
+        this.sumTemp += temp;
+        this.numReadings++;
+
+        if (temp > this.maxTemp)
+            maxTemp = temp;
+        if (temp < minTemp)
+            minTemp = temp;
     }
 
 }
